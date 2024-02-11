@@ -1,20 +1,18 @@
-﻿using KermoCompanyUpdater;
-using System;
-using System.Diagnostics;
-using System.Windows.Forms;
+﻿using System.Diagnostics;
+
+namespace KermoCompanyUpdater;
 
 class Program
 {
     [STAThread]
-    static async Task Main(string[] args)
+    [Obsolete("Obsolete")]
+    static async Task Main()
     {
         Application.EnableVisualStyles();
         Application.SetCompatibleTextRenderingDefault(false);
         
         var apiClient = new ApiClient();
         var fileUpdater = new FileUpdater(apiClient);
-
-        Console.WriteLine("Checking for updates...");
         
         var currentVersion = VersionManager.GetCurrentVersion();
         var latestVersion = await apiClient.GetLatestVersionAsync();
@@ -29,6 +27,7 @@ class Program
                 Process.Start(new ProcessStartInfo("cmd", $"/c start http://51.38.131.66/api/changelog{latestVersion}.html") { CreateNoWindow = true });
             }
             
+            Console.WriteLine("Checking files...");
             VersionManager.UpdateVersion(latestVersion);
             await fileUpdater.UpdateFileAsync();
             MessageBox.Show("The update process has completed successfully!", "KermoCompany", MessageBoxButtons.OK,

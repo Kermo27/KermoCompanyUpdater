@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("KermoCompanyUpdater")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ba843e91dd198615b55f908fdeae5919e27d93c9")]
 [assembly: System.Reflection.AssemblyProductAttribute("KermoCompanyUpdater")]
 [assembly: System.Reflection.AssemblyTitleAttribute("KermoCompanyUpdater")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -2,20 +2,20 @@
 
 public class VersionManager
 {
-    private static readonly string versionFilePath = Path.Combine(Directory.GetCurrentDirectory(), "version.txt");
+    private static readonly string VersionFilePath = Path.Combine(Directory.GetCurrentDirectory(), "version.txt");
 
     public static string GetCurrentVersion()
     {
-        if (File.Exists(versionFilePath))
+        if (File.Exists(VersionFilePath))
         {
-            return File.ReadAllText(versionFilePath);
+            return File.ReadAllText(VersionFilePath);
         }
 
         return "0";
     }
 
-    public static void UpdateVersion(string newVersion)
+    public static void UpdateVersion(string? newVersion)
     {
-        File.WriteAllText(versionFilePath, newVersion);
+        File.WriteAllText(VersionFilePath, newVersion);
     }
 }

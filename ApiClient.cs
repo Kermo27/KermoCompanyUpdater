@@ -21,7 +21,7 @@ public class ApiClient
         return await _httpClient.GetStringAsync($"{_baseUrl}files.php");
     }
 
-    public async Task<string> GetLatestVersionAsync()
+    public async Task<string?> GetLatestVersionAsync()
     {
         try
         {

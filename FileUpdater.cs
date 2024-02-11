@@ -1,10 +1,5 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.IO;
-using System.Net.Http;
 using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace KermoCompanyUpdater;
 
@@ -17,20 +12,24 @@ public class FileUpdater
         _apiClient = apiClient;
     }
 
+    [Obsolete("Obsolete")]
     public async Task UpdateFileAsync()
     {
         var updatesJson = await _apiClient.GetUpdatesAsync();
         var filesToUpdate = JsonConvert.DeserializeObject<List<FileUpdateInfo>>(updatesJson);
 
-        foreach (var fileInfo in filesToUpdate)
+        if (filesToUpdate != null)
         {
-            await UpdateFileAsync(fileInfo);
-        }
+            foreach (var fileInfo in filesToUpdate)
+            {
+                await UpdateFileAsync(fileInfo);
+            }
 
-        await CleanupLocalFilesAsync(filesToUpdate);
+            await CleanupLocalFilesAsync(filesToUpdate);
+        }
     }
 
-    private async Task CleanupLocalFilesAsync(List<FileUpdateInfo> serverFilesInfo)
+    private Task CleanupLocalFilesAsync(List<FileUpdateInfo> serverFilesInfo)
     {
         List<string> coreAppFiles = new List<string> {
             "KermoCompanyUpdater.deps.json",
@@ -49,7 +48,7 @@ public class FileUpdater
         // Delete files not present on the server and not part of the core application files
         foreach (var file in localFiles)
         {
-            if (!serverFiles.Contains(file) && !coreAppFiles.Contains(file))
+            if (file != null && !serverFiles.Contains(file) && !coreAppFiles.Contains(file))
             {
                 var fullPath = Path.Combine(applicationDirectory, file);
                 Console.WriteLine($"{file} was deleted.");
@@ -67,8 +66,11 @@ public class FileUpdater
                 Console.WriteLine($"{dir} was deleted.");
             }
         }
+
+        return Task.CompletedTask;
     }
 
+    [Obsolete("Obsolete")]
     private async Task UpdateFileAsync(FileUpdateInfo fileInfo)
     {
         var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileInfo.Path.Replace("/", "\\"));
@@ -99,6 +101,7 @@ public class FileUpdater
         }
     }
     
+    [Obsolete("Obsolete")]
     private async Task DownloadFileAsync(FileUpdateInfo fileInfo, string filePath)
     {
         var fileUrl = $"http://51.38.131.66/api/files/{Uri.EscapeUriString(fileInfo.Path.Replace("\\", "/"))}";
@@ -108,7 +111,7 @@ public class FileUpdater
             var directoryPath = Path.GetDirectoryName(filePath);
             if (!Directory.Exists(directoryPath))
             {
-                Directory.CreateDirectory(directoryPath);
+                if (directoryPath != null) Directory.CreateDirectory(directoryPath);
             }
 
             await File.WriteAllBytesAsync(filePath, fileBytes);
