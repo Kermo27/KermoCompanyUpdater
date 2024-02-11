@@ -1,0 +1,17 @@
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\KermoCompanyUpdater.exe
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\KermoCompanyUpdater.deps.json
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\KermoCompanyUpdater.runtimeconfig.json
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\KermoCompanyUpdater.dll
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\KermoCompanyUpdater.pdb
+F:\Projects\KermoCompanyUpdater\bin\Release\net8.0\Newtonsoft.Json.dll
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.csproj.AssemblyReference.cache
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.GeneratedMSBuildEditorConfig.editorconfig
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.AssemblyInfoInputs.cache
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.AssemblyInfo.cs
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.csproj.CoreCompileInputs.cache
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.csproj.CopyComplete
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.dll
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\refint\KermoCompanyUpdater.dll
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.pdb
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\KermoCompanyUpdater.genruntimeconfig.cache
+F:\Projects\KermoCompanyUpdater\obj\Release\net8.0\ref\KermoCompanyUpdater.dll
