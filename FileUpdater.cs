@@ -17,14 +17,14 @@ public class FileUpdater
     {
         var updatesJson = await _apiClient.GetUpdatesAsync();
         var filesToUpdate = JsonConvert.DeserializeObject<List<FileUpdateInfo>>(updatesJson);
-
+        
         if (filesToUpdate != null)
         {
             foreach (var fileInfo in filesToUpdate)
             {
                 await UpdateFileAsync(fileInfo);
             }
-
+            
             await CleanupLocalFilesAsync(filesToUpdate);
         }
     }
@@ -43,19 +43,19 @@ public class FileUpdater
 
         var applicationDirectory = Directory.GetCurrentDirectory();
         var serverFiles = serverFilesInfo.Select(f => f.Name).ToList();
-        var localFiles = Directory.GetFiles(applicationDirectory, "*", SearchOption.AllDirectories).Select(Path.GetFileName).ToList();
+        var localFiles = Directory.GetFiles(applicationDirectory, "*", SearchOption.AllDirectories).ToList();
 
         // Delete files not present on the server and not part of the core application files
-        foreach (var file in localFiles)
+        foreach (var filePath in localFiles)
         {
-            if (file != null && !serverFiles.Contains(file) && !coreAppFiles.Contains(file))
+            var fileName = Path.GetFileName(filePath);
+            if (fileName != null && !serverFiles.Contains(fileName) && !coreAppFiles.Contains(fileName))
             {
-                var fullPath = Path.Combine(applicationDirectory, file);
-                Console.WriteLine($"{file} was deleted.");
-                File.Delete(fullPath);
+                Console.WriteLine($"{filePath} was deleted.");
+                File.Delete(filePath);
             }
         }
-
+        
         // Remove empty directories
         var allDirectories = Directory.GetDirectories(applicationDirectory, "*", SearchOption.AllDirectories);
         foreach (var dir in allDirectories)
