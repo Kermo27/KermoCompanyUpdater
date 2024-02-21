@@ -1,16 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KermoCompanyUpdater", "KermoCompanyUpdater.csproj", "{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34607.119
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "KermoCompanyUpdater", "KermoCompanyUpdater.csproj", "{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		All|Any CPU = All|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.All|Any CPU.ActiveCfg = Release|Any CPU
+		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.All|Any CPU.Build.0 = Release|Any CPU
 		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74B261B6-E82A-4C3E-848E-C1985A8BB2DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D4776061-7E6B-45FE-8CAF-1E110930B888}
 	EndGlobalSection
 EndGlobal
