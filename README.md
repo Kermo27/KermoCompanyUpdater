@@ -4,7 +4,7 @@ This application synchronizes local files with server files for the Lethal Compa
 
 ## Description
 
-The Lethal Company Modpack Sync is a tool designed to simplify the process of keeping your local modpack files up-to-date with those on the server. By synchronizing files locally, you ensure that you have the latest updates, fixes, and additions required for an optimal gaming experience.
+KermoCompanyUpdater is a tool designed to simplify the process of keeping your local modpack files up-to-date with those on the server. By synchronizing files locally, you ensure that you have the latest updates, fixes, and additions required for an optimal gaming experience.
 
 ## Requirements
 
