@@ -1,4 +1,4 @@
-# KermoComapnyUpdater
+# KermoCompanyUpdater
 
 This application synchronizes local files with server files for the Lethal Company modpack.
 
