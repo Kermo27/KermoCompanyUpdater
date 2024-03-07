@@ -5,126 +5,140 @@ namespace KermoCompanyUpdater;
 
 public class FileUpdater
 {
-	private readonly ApiClient _apiClient;
+    private readonly ApiClient _apiClient;
+    private Logger logger = new Logger("log.txt");
 
-	private Logger logger = new Logger("log.txt");
+    public FileUpdater(ApiClient apiClient)
+    {
+        _apiClient = apiClient;
+    }
 
-	public FileUpdater(ApiClient apiClient)
-	{
-		_apiClient = apiClient;
-	}
+    public async Task UpdateFileAsync()
+    {
+        var updatesJson = await _apiClient.GetUpdatesAsync();
+        var filesToUpdate = JsonConvert.DeserializeObject<List<FileUpdateInfo>>(updatesJson);
 
-	public async Task UpdateFileAsync()
-	{
-		var updatesJson = await _apiClient.GetUpdatesAsync();
-		var filesToUpdate = JsonConvert.DeserializeObject<List<FileUpdateInfo>>(updatesJson);
+        if (filesToUpdate != null)
+        {
+            CleanupLocalFiles(filesToUpdate);
 
-		if (filesToUpdate != null)
-		{
-			foreach (var fileInfo in filesToUpdate)
-			{
-				Console.WriteLine($"Checking: {fileInfo.Path}");
-				logger.Log($"Checking: {fileInfo.Path}");
+            foreach (var fileInfo in filesToUpdate)
+            {
+                Console.WriteLine($"Checking: {fileInfo.Path}");
+                logger.Log($"Checking: {fileInfo.Path}");
 
-				await UpdateFileAsync(fileInfo);
-			}
+                await UpdateFileAsync(fileInfo);
+            }
 
-			await CleanupLocalFilesAsync(filesToUpdate);
-		}
-	}
+            CleanupLocalFiles(filesToUpdate);
+        }
+    }
 
-	private async Task UpdateFileAsync(FileUpdateInfo fileInfo)
-	{
-		var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileInfo.Path.Replace("/", "\\"));
+    private async Task UpdateFileAsync(FileUpdateInfo fileInfo)
+    {
+        var filePath = Path.Combine(Directory.GetCurrentDirectory(), fileInfo.Path.Replace("/", "\\"));
 
-		if (File.Exists(filePath))
-		{
-			var localFileHash = CalculateFileHash(filePath);
-			var serverFileHash = fileInfo.Hash;
+        if (File.Exists(filePath))
+        {
+            var localFileHash = CalculateFileHash(filePath);
+            var serverFileHash = fileInfo.Hash;
 
-			if (localFileHash.Equals(serverFileHash, StringComparison.OrdinalIgnoreCase))
-			{
-				return;
-			}
-		}
+            if (localFileHash.Equals(serverFileHash, StringComparison.OrdinalIgnoreCase))
+            {
+                return;
+            }
+        }
 
-		await DownloadFileAsync(fileInfo, filePath);
-	}
+        await DownloadFileAsync(fileInfo, filePath);
+    }
 
-	private async Task DownloadFileAsync(FileUpdateInfo fileInfo, string filePath)
-	{
-		var fileUrl = $"http://51.38.131.66/api/files/{Uri.EscapeDataString(fileInfo.Path.Replace("\\", "/"))}";
+    private async Task DownloadFileAsync(FileUpdateInfo fileInfo, string filePath)
+    {
+        var fileUrl = $"http://51.38.131.66/api/files/{Uri.EscapeUriString(fileInfo.Path.Replace("\\", "/"))}";
 
-		using (var httpClient = new HttpClient())
-		{
-			var fileBytes = await httpClient.GetByteArrayAsync(fileUrl);
-			var directoryPath = Path.GetDirectoryName(filePath);
-			if (!Directory.Exists(directoryPath))
-			{
-				if (directoryPath != null) Directory.CreateDirectory(directoryPath);
-			}
+        using (var httpClient = new HttpClient())
+        {
+            try
+            {
+                var fileBytes = await httpClient.GetByteArrayAsync(fileUrl);
 
-			await File.WriteAllBytesAsync(filePath, fileBytes);
-			Console.WriteLine($"Updated: {fileInfo.Name}");
-			logger.Log($"Updated: {fileInfo.Name}");
-		}
-	}
+                if (File.Exists(filePath))
+                {
+                    Console.WriteLine($"Deleting existing file: {filePath}");
+                    logger.Log($"Deleting existing file: {filePath}");
+                    File.Delete(filePath);
+                }
 
-	private Task CleanupLocalFilesAsync(List<FileUpdateInfo> serverFilesInfo)
-	{
-		List<string> coreAppFiles = new List<string> {
-			"KermoCompanyUpdater.deps.json",
-			"KermoCompanyUpdater.dll",
-			"KermoCompanyUpdater.exe",
-			"KermoCompanyUpdater.pdb",
-			"KermoCompanyUpdater.runtimeconfig.json",
-			"Newtonsoft.Json.dll",
-			"version.txt",
-			"log.txt"
-		};
+                var directoryPath = Path.GetDirectoryName(filePath);
+                if (!Directory.Exists(directoryPath))
+                {
+                    Directory.CreateDirectory(directoryPath);
+                }
 
-		var applicationDirectory = Directory.GetCurrentDirectory();
-		var serverFiles = serverFilesInfo.Select(f => f.Name).ToList();
-		var localFiles = Directory.GetFiles(applicationDirectory, "*", SearchOption.AllDirectories).ToList();
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await fileStream.WriteAsync(fileBytes, 0, fileBytes.Length);
+                }
 
-		// Delete files not present on the server and not part of the core application files
-		foreach (var filePath in localFiles)
-		{
-			var fileName = Path.GetFileName(filePath);
-			if (fileName != null && !serverFiles.Contains(fileName) && !coreAppFiles.Contains(fileName))
-			{
-				Console.WriteLine($"{filePath} was deleted.");
-				logger.Log($"{filePath} was deleted.");
+                Console.WriteLine($"Updated: {fileInfo.Name}");
+                logger.Log($"Updated: {fileInfo.Name}");
+            }
+            catch (Exception ex)
+            {
+                logger.Log($"Error downloading file '{fileUrl}': {ex.Message}");
+            }
+        }
+    }
 
-				File.Delete(filePath);
-			}
-		}
+    private void CleanupLocalFiles(List<FileUpdateInfo> serverFilesInfo)
+    {
+        var coreAppFiles = new HashSet<string>(new string[] {
+        "KermoCompanyUpdater.deps.json",
+        "KermoCompanyUpdater.dll",
+        "KermoCompanyUpdater.exe",
+        "KermoCompanyUpdater.pdb",
+        "KermoCompanyUpdater.runtimeconfig.json",
+        "Newtonsoft.Json.dll",
+        "version.txt",
+        "log.txt"
+    }, StringComparer.OrdinalIgnoreCase);
 
-		// Remove empty directories
-		var allDirectories = Directory.GetDirectories(applicationDirectory, "*", SearchOption.AllDirectories);
-		foreach (var dir in allDirectories)
-		{
-			if (Directory.GetFiles(dir).Length == 0 && Directory.GetDirectories(dir).Length == 0)
-			{
-				Console.WriteLine($"{dir} was deleted.");
-				logger.Log($"{dir} was deleted.");
+        var applicationDirectory = Directory.GetCurrentDirectory();
+        var serverFilesPaths = new HashSet<string>(serverFilesInfo.Select(f => Path.Combine(applicationDirectory, f.Path.Replace("/", "\\"))), StringComparer.OrdinalIgnoreCase);
 
-				Directory.Delete(dir);
-			}
-		}
+        var allFiles = Directory.EnumerateFiles(applicationDirectory, "*", SearchOption.AllDirectories);
+        foreach (var filePath in allFiles)
+        {
+            if (!serverFilesPaths.Contains(filePath) && !coreAppFiles.Contains(Path.GetFileName(filePath)))
+            {
+                Console.WriteLine($"Deleting: {filePath}");
+                logger.Log($"Deleting: {filePath}");
+                File.Delete(filePath);
+            }
+        }
 
-		return Task.CompletedTask;
-	}
+        var allDirectories = Directory.EnumerateDirectories(applicationDirectory, "*", SearchOption.AllDirectories)
+                                      .OrderByDescending(d => d.Length);
+        foreach (var dir in allDirectories)
+        {
+            if (!Directory.EnumerateFileSystemEntries(dir).Any())
+            {
+                Console.WriteLine($"Deleting directory: {dir}");
+                logger.Log($"Deleting directory: {dir}");
+                Directory.Delete(dir, false);
+            }
+        }
+    }
 
-	private string CalculateFileHash(string filePath)
-	{
-		using (var sha256 = SHA256.Create())
-		{
-			using (var fileStream = File.OpenRead(filePath))
-			{
-				var hash = sha256.ComputeHash(fileStream);
-				return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
-			}
-		}
-	}
+    private string CalculateFileHash(string filePath)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            using (var fileStream = File.OpenRead(filePath))
+            {
+                var hash = sha256.ComputeHash(fileStream);
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            }
+        }
+    }
 }

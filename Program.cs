@@ -1,4 +1,7 @@
 ﻿using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Principal;
 
 namespace KermoCompanyUpdater;
 
@@ -7,7 +10,7 @@ internal static class Program
 	[STAThread]
 	private static async Task Main()
 	{
-		var logFilePath = "log.txt";
+        var logFilePath = "log.txt";
 
 		Logger logger = new Logger(logFilePath);
 
@@ -20,7 +23,7 @@ internal static class Program
 		var currentVersion = VersionManager.GetCurrentVersion();
 		var latestVersion = await apiClient.GetLatestVersionAsync();
 
-		if (latestVersion != currentVersion)
+		if (latestVersion != currentVersion && IsAppRunningAsAdmin())
 		{
 			logger.ClearLog();
 
@@ -51,7 +54,7 @@ internal static class Program
 				Process.Start($"{Path.Combine(Directory.GetCurrentDirectory())}\\Lethal Company.exe");
 			}
 		}
-		else
+		else if (latestVersion == currentVersion && IsAppRunningAsAdmin())
 		{
 			var upToDateResult = MessageBox.Show("Modpack is up to date! Would you like to lauch Lethal Company now?", "KermoCompany", MessageBoxButtons.YesNo);
 			logger.Log("Modpack is up to date!");
@@ -61,5 +64,24 @@ internal static class Program
 				Process.Start($"{Path.Combine(Directory.GetCurrentDirectory())}\\Lethal Company.exe");
 			}
 		}
+		else
+		{
+            MessageBox.Show("Run this app as administrator!",
+                "KermoCompany", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 	}
+
+    private static bool IsAppRunningAsAdmin()
+    {
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        {
+            if (Environment.OSVersion.Version >= new Version(6, 2))
+            {
+                var identity = WindowsIdentity.GetCurrent();
+                return identity.Owner.IsWellKnown(WellKnownSidType.BuiltinAdministratorsSid);
+            }
+        }
+
+        return false;
+    }
 }
