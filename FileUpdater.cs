@@ -6,7 +6,7 @@ namespace KermoCompanyUpdater;
 public class FileUpdater
 {
     private readonly ApiClient _apiClient;
-    private Logger logger = new Logger("log.txt");
+    private readonly Logger logger = new Logger("log.txt");
 
     public FileUpdater(ApiClient apiClient)
     {
@@ -100,7 +100,9 @@ public class FileUpdater
         "KermoCompanyUpdater.runtimeconfig.json",
         "Newtonsoft.Json.dll",
         "version.txt",
-        "log.txt"
+        "log.txt",
+        "unins000.dat",
+        "unins000.exe",
     }, StringComparer.OrdinalIgnoreCase);
 
         var applicationDirectory = Directory.GetCurrentDirectory();
